@@ -1,9 +1,6 @@
 f=open(r"C:\Users\usuario\Desktop\vs code\Plain text.txt")
-print(f.read())
 f.close()
-f=open(r"C:\Users\usuario\Desktop\vs code\Plain text.txt", "w")
-f.write("Hello guys, how are you?")
-f.close()
-f=open(r"C:\Users\usuario\Desktop\vs code\Plain text.txt")
-print(f.read())
-f.close()
+
+def main():
+  pass
+main
