@@ -3,4 +3,5 @@ f.close()
 
 def main():
   pass
-main
+
+main()
