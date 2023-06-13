@@ -1,4 +1,4 @@
-import os, requests, json
+import os, requests, json, gestionClientes, gestionEnvios, gestionEstadisticas, gestionPagos, gestionProductos, gestionVentas
 
 def pre_cargado():
     url="https://github.com/Algoritmos-y-Programacion-2223-3/api-proyecto/blob/main/products.json"
