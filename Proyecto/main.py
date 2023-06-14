@@ -1,10 +1,17 @@
 import os, requests, json, gestionClientes, gestionEnvios, gestionEstadisticas, gestionPagos, gestionProductos, gestionVentas
 
+def borrado_datos():
+    for i in ["Productos.txt", "Clientes.txt", "Envios.txt", "Ventas.txt", "Pagos.txt", "Estadisticas.txt"]:
+        if os.path.exists(i):
+            os.remove(i)
+    
 def pre_cargado():
-    url="https://github.com/Algoritmos-y-Programacion-2223-3/api-proyecto/blob/main/products.json"
-    productos=requests.get(url).text
+    url="https://raw.githubusercontent.com/Algoritmos-y-Programacion-2223-3/api-proyecto/e20c412e7e1dcc3b089b0594b5a42f30ac15e49b/products.json"
+    with open("Productos.txt", "w") as p:
+        p.write(requests.get(url).text)
 
 def main():
+    pre_cargado()
     while True:
         print(
             "Bienvenido al sistema en línea de la tienda de productos naturales.\n"
@@ -24,7 +31,7 @@ def main():
                 continue
             break
         if opcion=="1":
-            pre_cargado()
+            continue
         
         if opcion=="2":
             continue
@@ -41,10 +48,15 @@ def main():
         if opcion=="6":
             continue
 
+        if opcion=="7":
+            continue
+
         if opcion=="8":
-            confirmación=input("¿Está seguro de que quiere salir del programa?    Y/N\n")
+            while True:
+                confirmación=input("¿Está seguro de que quiere salir del programa?    Y/N\n")
             if confirmación.upper()=="Y":
                 print("Muchas gracias por usar nuestro programa".center(50, "-"))
+                borrado_datos()
                 break
 
 
