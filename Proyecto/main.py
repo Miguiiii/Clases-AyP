@@ -33,32 +33,58 @@ def main():
         if opcion=="1":
             continue
         
-        if opcion=="2":
+        elif opcion=="2":
             continue
 
-        if opcion=="3":
+        elif opcion=="3":
             continue
 
-        if opcion=="4":
+        elif opcion=="4":
             continue
 
-        if opcion=="5":
+        elif opcion=="5":
             continue
 
-        if opcion=="6":
+        elif opcion=="6":
             continue
 
-        if opcion=="7":
-            continue
-
-        if opcion=="8":
+        elif opcion=="7":
             while True:
-                confirmación=input("¿Está seguro de que quiere salir del programa?    Y/N\n")
-            if confirmación.upper()=="Y":
+                confirmacion=input("¿Está seguro de que quiere reestablecer el estado inicial del programa?    Y/N\n")
+                try:
+                    confirmacion=confirmacion.upper()
+                except:
+                    print("Por favor ingrese una opción válida")
+                    continue
+                if confirmacion not in ["Y", "N"]:
+                    print("Por favor ingrese una opción válida")
+                    continue
+                break
+
+            if confirmacion=="Y":
+                print("Se procederá a borrar los datos existentes y se cargarán los datos de pre-cargado".center(101, "*"))
+                borrado_datos()
+                pre_cargado()
+                continue
+
+        elif opcion=="8":
+            while True:
+                confirmacion=input("¿Está seguro de que quiere salir del programa?    Y/N\n")
+                try:
+                    confirmacion=confirmacion.upper()
+                except:
+                    print("Por favor ingrese una opción válida")
+                    continue
+                if confirmacion not in ["Y", "N"]:
+                    print("Por favor ingrese una opción válida")
+                    continue
+                break
+
+            if confirmacion=="Y":
                 print("Muchas gracias por usar nuestro programa".center(50, "-"))
                 borrado_datos()
                 break
 
 
 if __name__=="__main__":
-    pre_cargado()
+    main()
