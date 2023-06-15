@@ -69,13 +69,10 @@ def main():
 
         elif opcion=="8":
             while True:
+                
                 confirmacion=input("¿Está seguro de que quiere salir del programa?    Y/N\n")
-                try:
-                    confirmacion=confirmacion.upper()
-                except:
-                    print("Por favor ingrese una opción válida")
-                    continue
-                if confirmacion not in ["Y", "N"]:
+
+                if not confirmacion.upper() not in ["Y", "N"]:
                     print("Por favor ingrese una opción válida")
                     continue
                 break
