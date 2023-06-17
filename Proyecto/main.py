@@ -11,6 +11,7 @@ def pre_cargado():
         p.write(requests.get(url).text)
 
 def main():
+    borrado_datos()
     pre_cargado()
     while True:
         print(
@@ -50,12 +51,8 @@ def main():
 
         elif opcion=="7":
             while True:
-                confirmacion=input("¿Está seguro de que quiere reestablecer el estado inicial del programa?    Y/N\n")
-                try:
-                    confirmacion=confirmacion.upper()
-                except:
-                    print("Por favor ingrese una opción válida")
-                    continue
+                confirmacion=input("¿Está seguro de que quiere reestablecer el estado inicial del programa?    Y/N\n").upper()
+      
                 if confirmacion not in ["Y", "N"]:
                     print("Por favor ingrese una opción válida")
                     continue
@@ -70,9 +67,9 @@ def main():
         elif opcion=="8":
             while True:
                 
-                confirmacion=input("¿Está seguro de que quiere salir del programa?    Y/N\n")
+                confirmacion=input("¿Está seguro de que quiere salir del programa?    Y/N\n").upper()
 
-                if not confirmacion.upper() not in ["Y", "N"]:
+                if confirmacion not in ["Y", "N"]:
                     print("Por favor ingrese una opción válida")
                     continue
                 break
