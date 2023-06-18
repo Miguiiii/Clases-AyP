@@ -1,23 +1,8 @@
-<<<<<<< HEAD
-import os, requests, json
-import gestionProductos, gestionVentas, gestionClientes, gestionPagos, gestionEnvios, gestionEstadisticas
-
-def borrado_datos():
-    for i in ["Productos.txt", "Clientes.txt", "Envios.txt", "Ventas.txt", "Pagos.txt", "Estadisticas.txt"]:
-        if os.path.exists(i):
-            os.remove(i)
-    
-def pre_cargado():
-    url="https://raw.githubusercontent.com/Algoritmos-y-Programacion-2223-3/api-proyecto/e20c412e7e1dcc3b089b0594b5a42f30ac15e49b/products.json"
-    with open("Productos.txt", "w") as p:
-        p.write(requests.get(url).text)
-=======
 import App
->>>>>>> 06479d3fc912e1af46b30108f3b0692749c55ee0
 
 def main():
-    borrado_datos()
-    pre_cargado()
+    App.borrado_datos()
+    App.pre_cargado()
     while True:
         print(
             "Bienvenido al sistema en línea de la tienda de productos naturales\n"
@@ -90,8 +75,8 @@ def main():
 
             if confirmacion=="Y":
                 print("Se procederá a borrar los datos existentes y se cargarán los datos de pre-cargado".center(101, "*"))
-                borrado_datos()
-                pre_cargado()
+                App.borrado_datos()
+                App.pre_cargado()
                 continue
 
         elif opcion=="8":
@@ -106,7 +91,7 @@ def main():
 
             if confirmacion=="Y":
                 print("Muchas gracias por usar nuestro programa".center(50, "-"))
-                borrado_datos()
+                App.borrado_datos()
                 break
 
 
