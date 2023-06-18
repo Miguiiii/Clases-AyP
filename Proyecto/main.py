@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import os, requests, json
 import gestionProductos, gestionVentas, gestionClientes, gestionPagos, gestionEnvios, gestionEstadisticas
 
@@ -10,8 +11,12 @@ def pre_cargado():
     url="https://raw.githubusercontent.com/Algoritmos-y-Programacion-2223-3/api-proyecto/e20c412e7e1dcc3b089b0594b5a42f30ac15e49b/products.json"
     with open("Productos.txt", "w") as p:
         p.write(requests.get(url).text)
+=======
+import App
+>>>>>>> 06479d3fc912e1af46b30108f3b0692749c55ee0
 
 def main():
+    borrado_datos()
     pre_cargado()
     while True:
         print(
@@ -76,12 +81,8 @@ def main():
 
         elif opcion=="7":
             while True:
-                confirmacion=input("¿Está seguro de que quiere reestablecer el estado inicial del programa?    Y/N\n")
-                try:
-                    confirmacion=confirmacion.upper()
-                except:
-                    print("Por favor ingrese una opción válida")
-                    continue
+                confirmacion=input("¿Está seguro de que quiere reestablecer el estado inicial del programa?    Y/N\n").upper()
+      
                 if confirmacion not in ["Y", "N"]:
                     print("Por favor ingrese una opción válida")
                     continue
@@ -95,12 +96,9 @@ def main():
 
         elif opcion=="8":
             while True:
-                confirmacion=input("¿Está seguro de que quiere salir del programa?    Y/N\n")
-                try:
-                    confirmacion=confirmacion.upper()
-                except:
-                    print("Por favor ingrese una opción válida")
-                    continue
+                
+                confirmacion=input("¿Está seguro de que quiere salir del programa?    Y/N\n").upper()
+
                 if confirmacion not in ["Y", "N"]:
                     print("Por favor ingrese una opción válida")
                     continue
