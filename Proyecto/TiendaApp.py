@@ -8,20 +8,22 @@ class App:
   pagos="Pagos.txt"
   estadisticas="Estadisticas.txt"
   
-  def _borrado_datos(self, productos, clientes, envios, ventas, pagos, estadisticas): 
-    for i in [productos, clientes, envios, ventas, pagos, estadisticas]:
+  def _borrado_datos(self): 
+    for i in [App.productos, App.clientes, App.envios, App.ventas, App.pagos, App.estadisticas]:
         if os.path.exists(i):
             os.remove(i)
 
-  def _pre_cargado(self, productos):
+  def _pre_cargado(self):
     url="https://raw.githubusercontent.com/Algoritmos-y-Programacion-2223-3/api-proyecto/e20c412e7e1dcc3b089b0594b5a42f30ac15e49b/products.json"
-    with open(productos, "w") as p:
+    with open(App.productos, "w") as p:
         p.write(requests.get(url).text)
+    for i in [App.clientes, App.envios, App.ventas, App.pagos, App.estadisticas]:
+      with open(i, "w") as f:
+        f.write("[]")
 
   def menu(self):
-    print("[ Menú ]".center(22, "-"))
     print(
-      "Bienvenido al sistema en línea de la tienda de productos naturales\n"
+      "[ Menú ]".center(42, "-")+"\n"
       "1.- Gestionar productos\n"
       "2.- Gestionar ventas\n"
       "3.- Gestionar clientes\n"
@@ -39,12 +41,7 @@ class App:
       break
 
     if opcion=="1":
-      print(
-        "1.- Agregar un nuevo producto\n"
-        "2.- Buscar productos en la base de datos\n"
-        "3.- Modificar información de productos existentes\n"
-        "4.- Eliminar productos de la tienda\n"
-      )
+      gestionProductos.Producto(App.productos)
     
     elif opcion=="2":
       print(
@@ -110,5 +107,8 @@ class App:
 
     return self.menu()
   
-app=App()
-app.menu()
+  def __init__(self):
+    self._borrado_datos()
+    self._pre_cargado()
+    print("\nBienvenido al sistema en línea de la tienda de productos naturales")
+    self.menu()
