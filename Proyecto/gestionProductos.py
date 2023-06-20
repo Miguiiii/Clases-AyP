@@ -1,7 +1,9 @@
 import json, InterfazBusqueda
 
 class Producto:
+
     keys={"name":str, "description":str, "price":int, "category":str}
+
     def info_producto(self):
         self.nombreProducto=input("Ingrese el nombre del nuevo producto: ")
         self.descripcion=input("Ingrese una descripción para el producto: ")
@@ -41,7 +43,6 @@ class Producto:
             P.write(json.dumps(lista_productos, indent=2))
 
         print("Nuevo producto registrado".center(35, "-"))
-
 
     def menu(self, txt_name):
         print(
