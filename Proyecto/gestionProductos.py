@@ -2,7 +2,13 @@ import json, InterfazBusqueda
 
 class Producto:
 
-    keys={"name":str, "description":str, "price":int, "category":str}
+    categorias=['Computers', 'Grocery', 'Health', 'Shoes', 'Home',
+               'Beauty', 'Movies', 'Games', 'Baby', 'Jewelery',
+               'Garden', 'Industrial', 'Clothing', 'Music', 'Books', 'Sports'
+               ]
+    keys=["name", "description", "price", "category"]
+    search_keys={"name":str, "disponibilidad":int, "price":int, "category":categorias}
+
 
     def info_producto(self):
         self.nombreProducto=input("Ingrese el nombre del nuevo producto: ")
