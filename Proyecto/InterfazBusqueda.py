@@ -2,8 +2,8 @@ import json
 
 class Busqueda:
 
-    def KeyValue_search(self, search_keys, name):
-        self.s_keys=search_keys
+    def _KeyValue_search(self, name):
+        
         print(
             f"[ Buscar {name} ]".center(40, "*")
         )
@@ -20,6 +20,7 @@ class Busqueda:
 
         if type(self.s_keys[self.Key])==list:
             self.l_opc=self.s_keys[self.Key]
+            print(f"Opciones de {self.Key}".center(30, "-"))
             for i in range(len(self.l_opc)):
                 print(
                     f"{i+1}.- {self.l_opc[i]}"
@@ -32,6 +33,8 @@ class Busqueda:
             try:
                 self.Value=int(self.Value)
                 if type(self.s_keys[self.Key])==list:
+                    if self.Value not in range(1, len(self.s_keys[self.Key])):
+                        raise IndexError
                     self.Value=self.l_opc[self.Value-1]
                 break
             except:
@@ -39,20 +42,18 @@ class Busqueda:
                     print("ADVERTENCIA: Por favor ingrese el campo con el tipo de información requerida")
                 elif type(self.s_keys[self.Key])==list:
                     print("ADVERTENCIA: Por favor ingrese una opción válida")
-                continue
 
+    def _buscar(self, json_name, name):
+        self._KeyValue_search(name)
 
-
-    def buscar(self, txt_name, search_keys, name):
-        self.KeyValue_search(search_keys, name)
-
-        with open(txt_name, "r") as BaseDatos:
+        with open(json_name, "r") as BaseDatos:
             self.datos=json.loads(BaseDatos.read())
 
-        self.resultados=[resul for resul in self.datos if resul[self.Key]==self.Value]
+        return [resul for resul in self.datos if resul[self.Key]==self.Value]
 
-    def display_search(self, txt_name, search_keys, name, keys):
-        self.buscar(txt_name, search_keys, name)
+    def display_search(self, json_name, name, search_keys):
+        self.s_keys=search_keys
+        self.resultados=self._buscar(json_name, name)
         print(
             f"[ {name} con {self.Key}={self.Value} ]".center(40, "*")
         )
@@ -64,38 +65,93 @@ class Busqueda:
                     f"{key}: {value}"
                 )
         print("-"*31)
-            
 
-    def __init__(self, txt_name, search_keys, keys):
-        self.txt_name=txt_name
-        self.name=self.txt_name.removesuffix(".txt")
-        self.l_keys=keys
+    def __init__(self, json_name, search_keys):
+        self.json_name=json_name
+        self.Classname=self.json_name.removesuffix(".json")
 
-        self.display_search(self.txt_name, search_keys, self.name, self.l_keys)
+        self.display_search(self.json_name, self.Classname, search_keys)
 
 
 class Modificar(Busqueda):
 
-    def extraer(self):
-        pass
+    def _identificar(self):
+        self.display_search(self.json_name, self.s_keys, self.Classname)
+        while True:
+            try:
+                self.Mod_index=int(input("Ingrese el número del producto: "))-1
+            except:
+                print("ADVERTENCIA: Por favor ingrese el campo con el tipo de información requerida")
+                continue
+            if self.Mod_index not in range(len(self.resultados)):
+                print("ADVERTENCIA: Por favor ingrese una opción válida")
+                continue
+            self.Mod_element=self.resultados[self.Mod_index]
+            print("Opción elegida".center(31, "-")+"\n")
+            for key, value in self.Mod_element:
+                print(f"{key}: {value}")
+            print("-"*31)
+                
+            while True:
+                confirmacion=input("Está seguro de que elige este elemento?    Y/N\n").upper()
+                if confirmacion not in ["Y", "N"]:
+                    print("ADVERTENCIA: Por favor ingrese una opción válida")
+                    continue
+                break
 
-    def __init__(self, txt_name, keys):
-        super().__init__(txt_name, keys)
+            if confirmacion=="Y":
+                break 
+
+    def extraer(self, eliminar=False):
+        self._identificar()
+        self.datos.remove(self.Mod_element)
+        if eliminar:
+            print("El elemento seleccionado ha sido removido con éxito de la base de datos de la tienda.")
+            return
+        self.Mod_index=self.datos.index(self.Mod_element)
+    
+    def _modificar(self, l_keys):
+        self.extraer()
+        while True:
+            print("-"*30)
+            for key, value in self.Mod_element:
+                print(f"{key}: {value}")
+            print("-"*30)
+            for i in range(l_keys):
+                print(f"{i+1}.- {l_keys[i]}")
+            print(f"{len(l_keys)+1}.- Terminar")
+
+
+    def reinsertar(self, l_keys):
+        self._modificar(l_keys)
+        self.datos.insert(self.Mod_index, self.Mod_element)
+        with open(self.json_name, "w") as file:
+            json.dump(self.datos, file, indent=4)       
+
+    def __init__(self, json_name, search_keys):
+        super().__init__(json_name, search_keys)
+        self.reinsertar(["name", "description", "price", "category", "disponibilidad"])
 
 
 
 
+# # li=[]
 
-# # Busqueda("Productos.txt", {"name":str, "disponibilidad":int, "price":int, "category":['Computers', 'Grocery', 'Health', 'Shoes', 'Home',
-# #                'Beauty', 'Movies', 'Games', 'Baby', 'Jewelery',
-# #                'Garden', 'Industrial', 'Clothing', 'Music', 'Books', 'Sports'
-# #                ]}, ["name", "description", "price", "category"])
+# Modificar("Productos.json",
+#           {"name":str, "disponibilidad":int, "price":int,
+#            "category":
+#            ['Computers', 'Grocery', 'Health', 'Shoes', 'Home',
+#             'Beauty', 'Movies', 'Games', 'Baby', 'Jewelery',
+#             'Garden', 'Industrial', 'Clothing', 'Music', 'Books', 'Sports'
+#             ]
+#             }
+#         )
 
 # # key="category"
 # # value="Garden"
 # # l1=None
 
-# # with open("Productos.txt", "r") as P:
+# # with open("Productos.json", "r") as P:
 # #     l1=json.loads(P.read())
 
 # # l2=[i for i in l1 if i[key]==value]

@@ -1,25 +1,27 @@
 import os, requests, json, gestionClientes, gestionEnvios, gestionEstadisticas, gestionPagos, gestionProductos, gestionVentas
 
 class App:
-  productos="Productos.txt"
-  clientes="Clientes.txt"
-  envios="Envios.txt"
-  ventas="Ventas.txt"
-  pagos="Pagos.txt"
-  estadisticas="Estadisticas.txt"
+  productos="Productos.json"
+  clientes="Clientes.json"
+  envios="Envios.json"
+  ventas="Ventas.json"
+  pagos="Pagos.json"
+  estadisticas="Estadisticas.json"
   
   def _borrado_datos(self): 
     for i in [App.productos, App.clientes, App.envios, App.ventas, App.pagos, App.estadisticas]:
-        if os.path.exists(i):
-            os.remove(i)
+      os.remove(i)
 
   def _pre_cargado(self):
     url="https://raw.githubusercontent.com/Algoritmos-y-Programacion-2223-3/api-proyecto/e20c412e7e1dcc3b089b0594b5a42f30ac15e49b/products.json"
-    with open(App.productos, "w") as p:
-        p.write(requests.get(url).text)
+    p=requests.get(url).json()
+    for i in p:
+      i["disponibilidad"]=10
+    with open(App.productos, "w") as P_file:
+      json.dump(p, P_file, indent=2)
     for i in [App.clientes, App.envios, App.ventas, App.pagos, App.estadisticas]:
       with open(i, "w") as f:
-        f.write("[]")
+        json.dump([], f, indent=2)
 
   def menu(self):
     print(
@@ -80,7 +82,8 @@ class App:
 
     elif opcion=="7":
       while True:
-        confirmacion=input("¿Está seguro de que quiere reestablecer el estado inicial del programa?    Y/N\n").upper()
+        confirmacion=input("¿Está seguro de que quiere reestablecer el estado inicial del programa?\n"
+                           "Se borrarán todos los datos actuales.    Y/N\n").upper()
 
         if confirmacion not in ["Y", "N"]:
           print("ADVERTENCIA: Por favor ingrese una opción válida")
@@ -108,7 +111,7 @@ class App:
     return self.menu()
   
   def __init__(self):
-    self._borrado_datos()
-    self._pre_cargado()
+    if not os.path.exists(App.productos):
+      self._pre_cargado()
     print("\nBienvenido al sistema en línea de la tienda de productos naturales")
     self.menu()
