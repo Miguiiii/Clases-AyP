@@ -145,4 +145,4 @@ class Modificar(Busqueda):
         self.datos.insert(self.Mod_index, self.Mod_element)
         with open(self.json_name, "w") as file:
             json.dump(self.datos, file, indent=4)  
-        print("[ Elemento modificado con éxito ]".center(30, "*"))     
+        print("[ Elemento modificado con éxito ]".center(30, "*"))
