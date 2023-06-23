@@ -1,11 +1,11 @@
 import json
-# import InterfazBusqueda as IB
+from InterfazBusqueda import Modificar as IB
 
-class Producto:
+class Producto(IB):
 
     def _get_cats(self, json_name):
         with open(json_name, "r") as fh:
-            return list({p["category"] for p in json.load(fh)})
+            self.l_categorias=list({p["category"] for p in json.load(fh)})
 
     def info_producto(self):
         self.nombreProducto=input("Ingrese el nombre del nuevo producto: ")
@@ -33,7 +33,6 @@ class Producto:
 
         if self.categoria==(len(self.l_categorias)+1):
             self.categoria=input("Ingrese el nombre de la nueva categoría: ")
-            self.l_categorias.append(self.categoria)
 
         else:
             self.categoria=self.l_categorias[self.categoria-1]
@@ -71,6 +70,8 @@ class Producto:
         print("Nuevo producto registrado".center(35, "-"))
 
     def menu(self, json_name):
+        self._get_cats(self.json_name)
+        self.search_keys={"name":str, "disponibilidad":int, "price":int, "category":self.l_categorias}
         print(
             "[ Gestión de Productos ]".center(54, "*")+"\n"
             "1.- Agregar un nuevo producto\n"
@@ -89,27 +90,23 @@ class Producto:
             self.registrar(json_name)
         
         if opcion=="2":
-            return
-            input("Presione Enter para continuar")
+            self.display_search(self.json_name, self.Classname, self.search_keys)
         
         if opcion=="3":
-            return
-            input("Presione Enter para continuar")
+            self.reinsertar(self.l_keys, self.search_keys)
         
         if opcion=="4":
-            return
-            input("Presione Enter para continuar")
+            self.extraer(self.search_keys)
         
         if opcion=="5":
             return
         
+        input("Presione Enter para continuar")
         self.menu(json_name)
 
     def __init__(self, json_name):
-        self.json_name=json_name
-        self.l_categorias=self._get_cats(self.json_name)
+        super().__init__(json_name)
         self.l_keys=["name", "description", "price", "category", "disponibilidad"]
-        self.search_keys={"name":str, "disponibilidad":int, "price":int, "category":self.l_categorias}
         self.menu(self.json_name)
 
 def main():

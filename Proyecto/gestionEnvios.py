@@ -1,4 +1,7 @@
-class envio:
+import json
+from InterfazBusqueda import Busqueda as IB
+
+class Envio(IB):
 
     def __init__(self):
         self.OrderCompra=None

@@ -1,4 +1,7 @@
-class cliente:
+import json
+from InterfazBusqueda import Modificar as IB
+
+class Cliente(IB):
     
     def __init__(self):
         self.IdPersonal=None

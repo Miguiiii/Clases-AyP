@@ -1,4 +1,7 @@
-class venta:
+import json
+from InterfazBusqueda import Busqueda as IB
+
+class Venta(IB):
 
     def __init__(self):
         self.IdCliente=None
