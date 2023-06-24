@@ -5,7 +5,7 @@ class Producto(IB):
 
     def _get_cats(self, json_name):
         with open(json_name, "r") as fh:
-            self.l_categorias=list({p["category"] for p in json.load(fh)})
+            Producto.l_categorias=list({p["category"] for p in json.load(fh)})
 
     def info_producto(self):
         self.nombreProducto=input("Ingrese el nombre del nuevo producto: ")
@@ -13,31 +13,32 @@ class Producto(IB):
         while True:
             try:
                 self.precio=int(input("Ingrese el precio del producto en forma de número entero: "))
-                self.disponibilidad=int(input("Ingrese la disponibilidad del producto: "))
+                self.quantity=int(input("Ingrese la cantidad disponible de este producto: "))
                 break
             except:
                 print("ADVERTENCIA: Por favor ingrese los campo con el tipo de información requerida")
         print("Opciones de categoría".center(30, "-"))
-        for i in range(len(self.l_categorias)):
-            print(f"{i+1}.- {self.l_categorias[i]}")
-        print(f"{len(self.l_categorias)+1}.- Crear una nueva categoría")
+        for i in range(len(Producto.l_categorias)):
+            print(f"{i+1}.- {Producto.l_categorias[i]}")
+        print(f"{len(Producto.l_categorias)+1}.- Crear una nueva categoría")
         while True:
             try:
-                self.categoria=int(input("Ingrese la opción para establecer la categoría del producto: "))
+                self.categoria=int(input("Ingrese la opción para establecer la categoría del producto: "))-1
             except:
                 print("ADVERTENCIA: Por favor ingrese los campo con el tipo de información requerida")
                 continue
-            if self.categoria<=(len(self.l_categorias)+1):
+            if self.categoria in range(len(Producto.l_categorias)):
+                self.categoria=Producto.l_categorias[self.categoria]
+                break
+            elif self.categoria==(len(Producto.l_categorias)):
+                self.categoria=input("Ingrese el nombre de la nueva categoría: ").lower().capitalize()
+                if self.categoria in Producto.l_categorias:
+                    print("ADVERTENCIA: Esta categoría ya exsiste")
+                    continue
                 break
             print("ADVERTENCIA: Por favor ingrese una opción válida")
 
-        if self.categoria==(len(self.l_categorias)+1):
-            self.categoria=input("Ingrese el nombre de la nueva categoría: ")
-
-        else:
-            self.categoria=self.l_categorias[self.categoria-1]
-
-        return dict(zip(self.l_keys, [self.nombreProducto, self.descripcion, self.precio, self.categoria, self.disponibilidad]))
+        return dict(zip(Producto.l_keys, [self.nombreProducto, self.descripcion, self.precio, self.categoria, self.quantity]))
 
     def registrar(self, json_name):
         self.info=self.info_producto()
@@ -47,7 +48,7 @@ class Producto(IB):
             f"Descripción: {self.descripcion}\n"
             f"Precio: {self.precio}\n"
             f"Categoría: {self.categoria}\n"
-            f"Disponibilidad: {self.disponibilidad}\n"
+            f"Cantidad disponible: {self.quantity}"
         )
         print("-"*30)
         
@@ -65,13 +66,13 @@ class Producto(IB):
             lista_productos=json.loads(P.read())
         lista_productos.append(self.info)
         with open(json_name, "w") as P:
-            P.write(json.dumps(lista_productos, indent=2))
+            json.dump(lista_productos, P, indent=2)
+        Producto.l_categorias.append(self.categoria)
 
         print("Nuevo producto registrado".center(35, "-"))
 
     def menu(self, json_name):
-        self._get_cats(self.json_name)
-        self.search_keys={"name":str, "disponibilidad":int, "price":int, "category":self.l_categorias}
+        Producto.search_keys={"name":str, "quantity":int, "price":int, "category":Producto.l_categorias}
         print(
             "[ Gestión de Productos ]".center(54, "*")+"\n"
             "1.- Agregar un nuevo producto\n"
@@ -90,13 +91,13 @@ class Producto(IB):
             self.registrar(json_name)
         
         if opcion=="2":
-            self.display_search(self.json_name, self.Classname, self.search_keys)
+            self.display_search(Producto.json_name, Producto.Classname, Producto.search_keys)
         
         if opcion=="3":
-            self.reinsertar(self.l_keys, self.search_keys)
+            self.reinsertar(Producto.l_keys, Producto.search_keys)
         
         if opcion=="4":
-            self.extraer(self.search_keys)
+            self.extraer(Producto.search_keys, True)
         
         if opcion=="5":
             return
@@ -106,8 +107,9 @@ class Producto(IB):
 
     def __init__(self, json_name):
         super().__init__(json_name)
-        self.l_keys=["name", "description", "price", "category", "disponibilidad"]
-        self.menu(self.json_name)
+        Producto.l_keys=["name", "description", "price", "category", "quantity"]
+        self._get_cats(Producto.json_name)
+        self.menu(Producto.json_name)
 
 def main():
     Producto("Productos.json")

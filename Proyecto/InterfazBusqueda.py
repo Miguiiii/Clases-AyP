@@ -31,11 +31,11 @@ class Busqueda:
             if search_keys[self.Key]!=int and type(search_keys[self.Key])!=list:
                 break
             try:
-                self.Value=int(self.Value)
+                self.Value=int(self.Value)-1
                 if type(search_keys[self.Key])==list:
-                    if self.Value not in range(1, len(search_keys[self.Key])):
+                    if self.Value not in range(len(search_keys[self.Key])):
                         raise IndexError
-                    self.Value=self.l_opc[self.Value-1]
+                    self.Value=self.l_opc[self.Value]
                 break
             except:
                 if search_keys[self.Key]==int:
@@ -67,8 +67,8 @@ class Busqueda:
         print("-"*31)
 
     def __init__(self, json_name):
-        self.json_name=json_name
-        self.Classname=self.json_name.removesuffix(".json")
+        Busqueda.json_name=json_name
+        Busqueda.Classname=self.json_name.removesuffix(".json")
 
 class Modificar(Busqueda):
 
@@ -107,7 +107,7 @@ class Modificar(Busqueda):
             print("El elemento seleccionado ha sido removido con éxito de la base de datos de la tienda.")
             return
     
-    def _modificar(self, l_keys, search_keys):
+    def _modificar(self, l_keys, search_keys, ListKey_agregar=False):
         self.extraer(search_keys)
         while True:
             print("[ Elemento a modificar ]".center(30, "-"))
@@ -130,6 +130,9 @@ class Modificar(Busqueda):
                 print("ADVERTENCIA: Por favor ingrese una opción válida")
                 input("Presione Enter para continuar")
                 continue
+            if type(self.Mod_element[el_key])==list:
+                for i in range(len(search_keys[el_key])):
+                    print(f"{i+1}.- {Producto.l_categorias[i]}")
             n_value=input(f"Ingrese el nuevo valor de {el_key.capitalize()}: ")
             if type(self.Mod_element[el_key])==int:
                 try:
@@ -140,9 +143,9 @@ class Modificar(Busqueda):
                     continue
             self.Mod_element[el_key]=n_value
         
-    def reinsertar(self, l_keys, search_keys):
+    def reinsertar(self, l_keys, search_keys, ListKey_agregar=False):
         self._modificar(l_keys, search_keys)
         self.datos.insert(self.Mod_index, self.Mod_element)
         with open(self.json_name, "w") as file:
-            json.dump(self.datos, file, indent=4)  
+            json.dump(self.datos, file, indent=2)  
         print("[ Elemento modificado con éxito ]".center(30, "*"))

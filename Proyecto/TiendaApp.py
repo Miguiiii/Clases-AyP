@@ -13,10 +13,8 @@ class App:
       os.remove(i)
 
   def _pre_cargado(self):
-    url="https://raw.githubusercontent.com/Algoritmos-y-Programacion-2223-3/api-proyecto/e20c412e7e1dcc3b089b0594b5a42f30ac15e49b/products.json"
+    url="https://raw.githubusercontent.com/Algoritmos-y-Programacion-2223-3/api-proyecto/main/products.json"
     p=requests.get(url).json()
-    for i in p:
-      i["disponibilidad"]=10
     with open(App.productos, "w") as P_file:
       json.dump(p, P_file, indent=2)
     for i in [App.clientes, App.envios, App.ventas, App.pagos, App.estadisticas]:
@@ -53,6 +51,7 @@ class App:
       )
 
     elif opcion=="3":
+      gestionClientes.Cliente(App.clientes)
       print(
         "1.- Registrar un nuevo cliente\n"
         "2.- Buscar clientes en la base de datos\n"
