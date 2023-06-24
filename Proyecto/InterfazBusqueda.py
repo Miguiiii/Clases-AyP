@@ -132,7 +132,7 @@ class Modificar(Busqueda):
                 continue
             if type(self.Mod_element[el_key])==list:
                 for i in range(len(search_keys[el_key])):
-                    print(f"{i+1}.- {Producto.l_categorias[i]}")
+                    print(f"{i+1}.- {l_keys[i]}")
             n_value=input(f"Ingrese el nuevo valor de {el_key.capitalize()}: ")
             if type(self.Mod_element[el_key])==int:
                 try:
