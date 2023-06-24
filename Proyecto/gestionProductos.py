@@ -107,7 +107,7 @@ class Producto(IB):
 
     def __init__(self, json_name):
         super().__init__(json_name)
-        Producto.l_keys=["name", "description", "price", "category", "quantity"]
+        Producto.l_keys={"name":str, "description":str, "price":int, "category":Producto.l_categorias, "quantity":int}
         self._get_cats(Producto.json_name)
         self.menu(Producto.json_name)
 

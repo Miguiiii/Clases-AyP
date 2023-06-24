@@ -50,12 +50,7 @@ class Cliente(IB):
     def __init__(self, json_name):
         super().__init__(json_name)
         Cliente.l_keys=[]
-        self.IdPersonal=None
-        self.TipoCliente=None
-        self.IdNumerica=None
-        self.correo=None
-        self.DirEnvio=None
-        self.telefono=None
+        Cliente.l_TiposCliente=["Natural", "Jurídico"]
         
 class Producto(IB):
 

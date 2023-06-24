@@ -43,17 +43,17 @@ class Busqueda:
                 elif type(search_keys[self.Key])==list:
                     print("ADVERTENCIA: Por favor ingrese una opción válida")
 
-    def _buscar(self, json_name, name, search_keys):
+    def _buscar(self, name, search_keys):
         self._KeyValue_search(name, search_keys)
 
-        with open(json_name, "r") as BaseDatos:
+        with open(Busqueda.json_name, "r") as BaseDatos:
             self.datos=json.loads(BaseDatos.read())
 
         return [resul for resul in self.datos if resul[self.Key]==self.Value]
 
-    def display_search(self, json_name, name, search_keys):
+    def display_search(self, name, search_keys):
         
-        self.resultados=self._buscar(json_name, name, search_keys)
+        self.resultados=self._buscar(name, search_keys)
         print(
             f"[ {name} con {self.Key}={self.Value} ]".center(40, "*")
         )
@@ -73,7 +73,7 @@ class Busqueda:
 class Modificar(Busqueda):
 
     def _identificar(self, search_keys):
-        self.display_search(self.json_name, self.Classname, search_keys)
+        self.display_search(self.Classname, search_keys)
         while True:
             try:
                 self.Mod_index=int(input("Ingrese el número del elemento a elegir: "))-1
@@ -133,6 +133,7 @@ class Modificar(Busqueda):
             if type(self.Mod_element[el_key])==list:
                 for i in range(len(search_keys[el_key])):
                     print(f"{i+1}.- {l_keys[i]}")
+            
             n_value=input(f"Ingrese el nuevo valor de {el_key.capitalize()}: ")
             if type(self.Mod_element[el_key])==int:
                 try:
@@ -146,6 +147,6 @@ class Modificar(Busqueda):
     def reinsertar(self, l_keys, search_keys, ListKey_agregar=False):
         self._modificar(l_keys, search_keys)
         self.datos.insert(self.Mod_index, self.Mod_element)
-        with open(self.json_name, "w") as file:
+        with open(Modificar.json_name, "w") as file:
             json.dump(self.datos, file, indent=2)  
         print("[ Elemento modificado con éxito ]".center(30, "*"))
