@@ -7,6 +7,61 @@ class Producto(IB):
         with open(json_name, "r") as fh:
             Producto.l_categorias=list({p["category"] for p in json.load(fh)})
 
+    def _modificar(self, l_keys, search_keys, venta=False):
+        super()._modificar(l_keys, search_keys)
+        while True:
+            print("[ Producto a modificar ]".center(30, "-"))
+            for key, value in self.Mod_element.items():
+                print(f"{key}: {value}")
+            print("-"*30)
+            for i in range(len(self.lista_keys)):
+                print(f"{i+1}.- {self.lista_keys[i].capitalize()}")
+            print(f"{len(self.lista_keys)+1}.- Terminar")
+
+            try:
+                opcion=int(input("Eliga el número de la información a modificar: "))-1
+                if opcion==len(self.lista_keys):
+                    break
+                el_key=self.lista_keys[opcion]
+            except ValueError:
+                print("ADVERTENCIA: Por favor rellene el campo con el tipo de información requerida")
+                input("Presione Enter para continuar")
+                continue
+            except IndexError:
+                print("ADVERTENCIA: Por favor ingrese una opción válida")
+                input("Presione Enter para continuar")
+                continue
+            
+            if type(l_keys[el_key])==list:
+                print(f"Opciones de {el_key}".center(30, "-"))
+                for i in range(len(Producto.l_categorias)):
+                    print(f"{i+1}.- {Producto.l_categorias[i]}")
+            
+            n_value=input(f"Ingrese el nuevo valor de {el_key.capitalize()}: ")
+            if type(self.Mod_element[el_key])==int:
+                try:
+                    n_value=int(n_value)
+                except:
+                    print("ADVERTENCIA: Por favor rellene el campo con el tipo de información requerida")
+                    input("Presione Enter para continuar")
+                    continue
+            
+            if type(l_keys[el_key])==list:
+                try:
+                    n_value=int(n_value)-1
+                    if n_value in range(len(Producto.l_categorias)):
+                        n_value=Producto.l_categorias[n_value]
+                except ValueError:
+                    print("ADVERTENCIA: Por favor rellene el campo con el tipo de información requerida")
+                    input("Presione Enter para continuar")
+                    continue
+                except IndexError:
+                    print("ADVERTENCIA: Por favor ingrese una opción válida")
+                    input("Presione Enter para continuar")
+                    continue
+            
+            self.Mod_element[el_key]=n_value
+
     def info_producto(self):
         self.nombreProducto=input("Ingrese el nombre del nuevo producto: ")
         self.descripcion=input("Ingrese una descripción para el producto: ")
@@ -20,7 +75,7 @@ class Producto(IB):
         print("Opciones de categoría".center(30, "-"))
         for i in range(len(Producto.l_categorias)):
             print(f"{i+1}.- {Producto.l_categorias[i]}")
-        print(f"{len(Producto.l_categorias)+1}.- Crear una nueva categoría")
+
         while True:
             try:
                 self.categoria=int(input("Ingrese la opción para establecer la categoría del producto: "))-1
@@ -30,15 +85,10 @@ class Producto(IB):
             if self.categoria in range(len(Producto.l_categorias)):
                 self.categoria=Producto.l_categorias[self.categoria]
                 break
-            elif self.categoria==(len(Producto.l_categorias)):
-                self.categoria=input("Ingrese el nombre de la nueva categoría: ").lower().capitalize()
-                if self.categoria in Producto.l_categorias:
-                    print("ADVERTENCIA: Esta categoría ya exsiste")
-                    continue
-                break
+
             print("ADVERTENCIA: Por favor ingrese una opción válida")
 
-        return dict(zip(Producto.l_keys, [self.nombreProducto, self.descripcion, self.precio, self.categoria, self.quantity]))
+        return dict(zip(Producto.l_keys.keys(), [self.nombreProducto, self.descripcion, self.precio, self.categoria, self.quantity]))
 
     def registrar(self, json_name):
         self.info=self.info_producto()
@@ -71,8 +121,8 @@ class Producto(IB):
 
         print("Nuevo producto registrado".center(35, "-"))
 
-    def menu(self, json_name):
-        Producto.search_keys={"name":str, "quantity":int, "price":int, "category":Producto.l_categorias}
+    def menu(self):
+
         print(
             "[ Gestión de Productos ]".center(54, "*")+"\n"
             "1.- Agregar un nuevo producto\n"
@@ -88,7 +138,7 @@ class Producto(IB):
                 continue
             break
         if opcion=="1":
-            self.registrar(json_name)
+            self.registrar(Producto.json_name)
         
         if opcion=="2":
             self.display_search(Producto.json_name, Producto.Classname, Producto.search_keys)
@@ -103,13 +153,16 @@ class Producto(IB):
             return
         
         input("Presione Enter para continuar")
-        self.menu(json_name)
+        self.menu()
 
-    def __init__(self, json_name):
+    def __init__(self, json_name, venta=False):
         super().__init__(json_name)
-        Producto.l_keys={"name":str, "description":str, "price":int, "category":Producto.l_categorias, "quantity":int}
         self._get_cats(Producto.json_name)
-        self.menu(Producto.json_name)
+        Producto.l_keys={"name":str, "description":str, "price":int, "category":Producto.l_categorias, "quantity":int}
+        Producto.search_keys={"name":str, "price":int, "category":Producto.l_categorias, "quantity":int}
+        if venta:
+            return Producto.display_search(Producto.json_name, Producto.Classname, Producto.search_keys)
+        return self.menu()
 
 def main():
     Producto("Productos.json")

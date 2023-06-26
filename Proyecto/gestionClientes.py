@@ -14,7 +14,7 @@ class Cliente(IB):
     def registrar(self, json_name):
         pass
 
-    def menu(self, json_name):
+    def menu(self):
         print(
             "[ Gestión de Ventas ]".center(54, "*")+"\n"
             "1.- Registrar un nuevo cliente\n"
@@ -30,7 +30,7 @@ class Cliente(IB):
                 continue
             break
         if opcion=="1":
-            self.registrar(json_name)
+            self.registrar(Cliente.json_name)
         
         if opcion=="2":
             self.display_search(Cliente.json_name, Cliente.Classname, Cliente.search_keys)
@@ -45,12 +45,15 @@ class Cliente(IB):
             return
         
         input("Presione Enter para continuar")
-        self.menu(json_name)
+        self.menu()
 
-    def __init__(self, json_name):
+    def __init__(self, json_name, venta=False):
         super().__init__(json_name)
         Cliente.l_keys=[]
         Cliente.l_TiposCliente=["Natural", "Jurídico"]
+        if venta:
+            return Cliente.display_search()
+        return Cliente.menu()
         
 class Producto(IB):
 
