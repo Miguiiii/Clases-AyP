@@ -106,7 +106,9 @@ class Modificar(Busqueda):
             if confirmacion=="Y":
                 break 
 
-    def extraer(self, search_keys, eliminar=False):
+    def extraer(self, search_keys, eliminar=False, venta=False, cancelar=False):
+        if venta:
+            pass
         encontrado=self.identificar(search_keys)
         if encontrado==False:
             return encontrado
@@ -116,14 +118,40 @@ class Modificar(Busqueda):
             print("El elemento seleccionado ha sido removido con éxito de la base de datos de la tienda.")
             return
     
-    def _modificar(self, l_keys, search_keys):
-        encontrado=self.extraer(search_keys)
+    def _modificar(self, l_keys, search_keys, venta, cantidad, cancelar):
+        encontrado=self.extraer(search_keys, False, venta, cancelar)
+        if venta:
+            cant=cantidad
+            if cantidad!=0:
+                while True:
+                    try:
+                        cant=int(input("Ingrese la cantidad de {} que agregar al carrito de compra: ".format(self.Mod_element["name"])))
+                        if cant<=0:
+                            raise ValueError
+                    except ValueError:
+                        print("ADVERTENCIA: Por favor ingrese los campo con el tipo de información requerida")
+                        continue
+                    if cant>self.Mod_element["quantity"]:
+                        print("ADVERTENCIA: Esa cantidad supera a la disponible en el inventario")
+                        continue
+                    cant=-cant
+                    break
+
+            return
+
+        while True:
+            try:
+                self.precio=int(input("Ingrese el precio del producto en forma de número entero: "))
+                self.quantity=int(input("Ingrese la cantidad disponible de este producto: "))
+                break
+            except:
+                print("ADVERTENCIA: Por favor ingrese los campo con el tipo de información requerida")
         if encontrado==False:
             return encontrado
         self.lista_keys=list(l_keys.keys())
         
-    def reinsertar(self, l_keys, search_keys):
-        encontrado=self._modificar(l_keys, search_keys)
+    def reinsertar(self, l_keys, search_keys, venta=False, cantidad=0):
+        encontrado=self._modificar(l_keys, search_keys, venta, cantidad)
         if encontrado==False:
             return
         self.datos.insert(self.Mod_index, self.Mod_element)
