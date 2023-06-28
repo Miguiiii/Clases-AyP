@@ -5,16 +5,96 @@ class Cliente(IB):
 
     def info_cliente(self):
         self.IdPersonal=input("Ingrese el nombre y apellido del cliente, o en su defecto su Razon Social: ")
-        self.TipoCliente=None
-        self.IdNumerica=None
-        self.correo=None
-        self.DirEnvio=None
-        self.telefono=None
+        for i in range(list(Cliente.l_TiposCliente)):
+            print(f"{i+1}.- {Cliente.l_TiposCliente[i]}")
+        while True:
+            try:
+                self.TipoCliente=int(input("Ingrese el número del tipo de cliente: "))
+                self.TipoCliente=Cliente.l_TiposCliente[self.TipoCliente]
+                break
+            except ValueError:
+                print("ADVERTENCIA: Por favor ingrese el campo con el tipo de información requerida")
+            except IndexError:
+                print("ADVERTENCIA: Por favor ingrese una opción válida")
+
+        for i in range(list(Cliente.l_TiposIdNumerica)):
+            print(f"{i+1}.- {Cliente.l_TiposIdNumerica[i]}")
+        while True:
+            try:
+                self.TipoIdNumerica=int(input("Ingrese el número del tipo de identificación numérica: "))
+                self.TipoIdNumerica=Cliente.l_TiposIdNumerica[self.TipoIdNumerica]
+                break
+            except ValueError:
+                print("ADVERTENCIA: Por favor ingrese el campo con el tipo de información requerida")
+            except IndexError:
+                print("ADVERTENCIA: Por favor ingrese una opción válida")
+        while True:
+            if self.TipoIdNumerica=="Cédula":
+                self.IdNumerica=input("Ingrese su cédula como un número de 8 dígitos: ")
+                if not self.IdNumerica.isnumeric() or len(self.IdNumerica)!=8:
+                    print("ADVERTENCIA: Por favor ingrese el campo con el tipo de información requerida")
+                    continue
+            elif self.TipoIdNumerica=="RIF":
+                self.IdNumerica=input("Ingrese su RIF del siguiente modo:\nXXXXXXXX-X (8 dígitos, un guión y el último dígito): ")
+                if len(self.IdNumerica)!=10 or len(self.IdNumerica.split("-"))!=2:
+                    print("ADVERTENCIA: Por favor ingrese el campo con el tipo de información requerida")
+                    continue
+                self.IdNumerica=self.IdNumerica.split("-")
+                if not self.IdNumerica[0].isnumeric() or not self.IdNumerica[1].isnumeric():
+                    print("ADVERTENCIA: Por favor ingrese el campo con el tipo de información requerida")
+                    continue
+                self.IdNumerica="-".join(self.IdNumerica)
+            break
+        while True:
+            self.correo=input("Ingrese un correo electrónico (debe de contener un solo @, seguido por un dominio): ")
+            if len(self.correo.split("@"))!=2 or "." not in self.correo[self.correo.index("@"):]:
+                print("ADVERTENCIA: Por favor ingrese el campo con el tipo de información requerida")
+                continue
+            break
+        self.DirEnvio=input("Ingrese su dirección de envío: ")
+        while True:
+            self.telefono=input("Ingrese su número telefónico en el formato de un número de 11 dígitos de longitud: ")
+            if len(self.telefono)!=11 or not self.telefono.isnumeric():
+                print("ADVERTENCIA: Por favor ingrese el campo con el tipo de información requerida")
+                continue
+            self.telefono=int(self.telefono)
+            break
+
+        infoKeys=[i if not type(i)==list else self.TipoIdNumerica for i in Cliente.l_keys.keys()]
+        return dict(zip(infoKeys, [self.IdPersonal, self.TipoCliente, self.IdNumerica, self.correo, self.DirEnvio, self.telefono]))
 
     def registrar(self, json_name):
-        pass
+        self.info=self.info_cliente()
+
+        print("-"*30)
+        for k, v in self.info.items():
+            print(
+                f"{k}: {v}"
+            )
+        print("-"*30)
+        
+        while True:
+            confirmacion=input("Está seguro de que quiere registrar este cliente?    Y/N\n").upper()
+            if confirmacion not in ["Y", "N"]:
+                print("ADVERTENCIA: Por favor ingrese una opción válida")
+                continue
+            break
+
+        if confirmacion=="N":
+            return
+
+        with open(json_name, "r+") as P:
+            lista_clientes=json.loads(P.read())
+            lista_clientes.append(self.info)
+            json.dump(lista_clientes, P, indent=2)
+
+        print("Nuevo cliente registrado".center(35, "-"))
+
+    def _modificar(self, l_keys, search_keys, venta, cantidad, cancelar):
+        super()._modificar(l_keys, search_keys, venta, cantidad, cancelar)
 
     def menu(self):
+        Cliente.l_keys={"Identificación":str, "Tipo de cliente":str, ["Cédula", "RIF"]:str, "E-mail":str, "Dirección":str, "Teléfono":int}
         print(
             "[ Gestión de Ventas ]".center(54, "*")+"\n"
             "1.- Registrar un nuevo cliente\n"
@@ -33,7 +113,7 @@ class Cliente(IB):
             self.registrar(Cliente.json_name)
         
         if opcion=="2":
-            self.display_search(Cliente.json_name, Cliente.Classname, Cliente.search_keys)
+            self.display_search(Cliente.Classname, Cliente.search_keys)
         
         if opcion=="3":
             self.reinsertar(Cliente.l_keys, Cliente.search_keys)
@@ -47,123 +127,15 @@ class Cliente(IB):
         input("Presione Enter para continuar")
         self.menu()
 
-    def __init__(self, json_name, venta=False):
+    def __init__(self, json_name, identificar=False):
         super().__init__(json_name)
-        Cliente.l_keys=[]
         Cliente.l_TiposCliente=["Natural", "Jurídico"]
-        if venta:
-            return Cliente.display_search()
+        Cliente.l_TiposIdNumerica=["Cédula", "RIF"]
+        Cliente.search_keys={Cliente.l_TiposIdNumerica:"Cédula: 30567501\nRIF: 30567501-5", "E-mail":"tienda.natural@gmail.com"}
+        if identificar:
+            return self.identificar(Cliente.search_keys)
         return Cliente.menu()
-        
-class Producto(IB):
 
-    def _get_cats(self, json_name):
-        with open(json_name, "r") as fh:
-            Producto.l_categorias=list({p["category"] for p in json.load(fh)})
-
-    def info_producto(self):
-        self.nombreProducto=input("Ingrese el nombre del nuevo producto: ")
-        self.descripcion=input("Ingrese una descripción para el producto: ")
-        while True:
-            try:
-                self.precio=int(input("Ingrese el precio del producto en forma de número entero: "))
-                self.quantity=int(input("Ingrese la cantidad disponible de este producto: "))
-                break
-            except:
-                print("ADVERTENCIA: Por favor ingrese los campo con el tipo de información requerida")
-        print("Opciones de categoría".center(30, "-"))
-        for i in range(len(Producto.l_categorias)):
-            print(f"{i+1}.- {Producto.l_categorias[i]}")
-        print(f"{len(Producto.l_categorias)+1}.- Crear una nueva categoría")
-        while True:
-            try:
-                self.categoria=int(input("Ingrese la opción para establecer la categoría del producto: "))-1
-            except:
-                print("ADVERTENCIA: Por favor ingrese los campo con el tipo de información requerida")
-                continue
-            if self.categoria in range(len(Producto.l_categorias)):
-                self.categoria=Producto.l_categorias[self.categoria]
-                break
-            elif self.categoria==(len(Producto.l_categorias)):
-                self.categoria=input("Ingrese el nombre de la nueva categoría: ").lower().capitalize()
-                if self.categoria in Producto.l_categorias:
-                    print("ADVERTENCIA: Esta categoría ya exsiste")
-                    continue
-                break
-            print("ADVERTENCIA: Por favor ingrese una opción válida")
-
-        return dict(zip(Producto.l_keys, [self.nombreProducto, self.descripcion, self.precio, self.categoria, self.quantity]))
-
-    def registrar(self, json_name):
-        self.info=self.info_producto()
-        print("-"*30)
-        print(
-            f"Nombre: {self.nombreProducto}\n"
-            f"Descripción: {self.descripcion}\n"
-            f"Precio: {self.precio}\n"
-            f"Categoría: {self.categoria}\n"
-            f"Cantidad disponible: {self.quantity}"
-        )
-        print("-"*30)
-        
-        while True:
-            confirmacion=input("Está seguro de que quiere agregar este producto a la tienda?    Y/N\n").upper()
-            if confirmacion not in ["Y", "N"]:
-                print("ADVERTENCIA: Por favor ingrese una opción válida")
-                continue
-            break
-
-        if confirmacion=="N":
-            return
-
-        with open(json_name, "r") as P:
-            lista_productos=json.loads(P.read())
-        lista_productos.append(self.info)
-        with open(json_name, "w") as P:
-            json.dump(lista_productos, P, indent=2)
-        Producto.l_categorias.append(self.categoria)
-
-        print("Nuevo producto registrado".center(35, "-"))
-
-    def menu(self, json_name):
-        Producto.search_keys={"name":str, "quantity":int, "price":int, "category":Producto.l_categorias}
-        print(
-            "[ Gestión de Productos ]".center(54, "*")+"\n"
-            "1.- Agregar un nuevo producto\n"
-            "2.- Buscar productos en la base de datos\n"
-            "3.- Modificar información de productos existentes\n"
-            "4.- Eliminar productos de la tienda\n"
-            "5.- Regresar\n"
-            )
-        while True:
-            opcion=input("Ingrese el número de la acción a realizar: ")
-            if opcion not in ["1", "2", "3", "4", "5"]:
-                print("ADVERTENCIA: Por favor ingrese un número de acción válido")
-                continue
-            break
-        if opcion=="1":
-            self.registrar(json_name)
-        
-        if opcion=="2":
-            self.display_search(Producto.json_name, Producto.Classname, Producto.search_keys)
-        
-        if opcion=="3":
-            self.reinsertar(Producto.l_keys, Producto.search_keys)
-        
-        if opcion=="4":
-            self.extraer(Producto.search_keys, True)
-        
-        if opcion=="5":
-            return
-        
-        input("Presione Enter para continuar")
-        self.menu(json_name)
-
-    def __init__(self, json_name):
-        super().__init__(json_name)
-        Producto.l_keys=["name", "description", "price", "category", "quantity"]
-        self._get_cats(Producto.json_name)
-        self.menu(Producto.json_name)
 
 def main():
     pass

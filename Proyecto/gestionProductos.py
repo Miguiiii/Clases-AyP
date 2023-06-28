@@ -7,8 +7,8 @@ class Producto(IB):
         with open(json_name, "r") as fh:
             Producto.l_categorias=list({p["category"] for p in json.load(fh)})
 
-    def _modificar(self, l_keys, search_keys, venta=False):
-        super()._modificar(l_keys, search_keys)
+    def _modificar(self, l_keys, search_keys, venta, cantidad):
+        super()._modificar(l_keys, search_keys, venta, cantidad)
         while True:
             print("[ Producto a modificar ]".center(30, "-"))
             for key, value in self.Mod_element.items():
@@ -69,9 +69,11 @@ class Producto(IB):
             try:
                 self.precio=int(input("Ingrese el precio del producto en forma de número entero: "))
                 self.quantity=int(input("Ingrese la cantidad disponible de este producto: "))
+                if self.precio<=0 or self.quantity<=0:
+                    raise ValueError
                 break
             except:
-                print("ADVERTENCIA: Por favor ingrese los campo con el tipo de información requerida")
+                print("ADVERTENCIA: Por favor rellene los campos con el tipo de información requerida")
         print("Opciones de categoría".center(30, "-"))
         for i in range(len(Producto.l_categorias)):
             print(f"{i+1}.- {Producto.l_categorias[i]}")
@@ -80,7 +82,7 @@ class Producto(IB):
             try:
                 self.categoria=int(input("Ingrese la opción para establecer la categoría del producto: "))-1
             except:
-                print("ADVERTENCIA: Por favor ingrese los campo con el tipo de información requerida")
+                print("ADVERTENCIA: Por favor rellene el campo con el tipo de información requerida")
                 continue
             if self.categoria in range(len(Producto.l_categorias)):
                 self.categoria=Producto.l_categorias[self.categoria]
@@ -112,12 +114,10 @@ class Producto(IB):
         if confirmacion=="N":
             return
 
-        with open(json_name, "r") as P:
+        with open(json_name, "r+") as P:
             lista_productos=json.loads(P.read())
-        lista_productos.append(self.info)
-        with open(json_name, "w") as P:
+            lista_productos.append(self.info)
             json.dump(lista_productos, P, indent=2)
-        Producto.l_categorias.append(self.categoria)
 
         print("Nuevo producto registrado".center(35, "-"))
 
@@ -141,7 +141,7 @@ class Producto(IB):
             self.registrar(Producto.json_name)
         
         if opcion=="2":
-            self.display_search(Producto.json_name, Producto.Classname, Producto.search_keys)
+            self.display_search(Producto.Classname, Producto.search_keys)
         
         if opcion=="3":
             self.reinsertar(Producto.l_keys, Producto.search_keys)
@@ -155,13 +155,13 @@ class Producto(IB):
         input("Presione Enter para continuar")
         self.menu()
 
-    def __init__(self, json_name, venta=False):
+    def __init__(self, json_name, venta=False, cantidad=0, cancelar=False, P_Cancelado=None):
         super().__init__(json_name)
         self._get_cats(Producto.json_name)
         Producto.l_keys={"name":str, "description":str, "price":int, "category":Producto.l_categorias, "quantity":int}
-        Producto.search_keys={"name":str, "price":int, "category":Producto.l_categorias, "quantity":int}
+        Producto.search_keys={"name":"Mesa de playa", "price":int, "category":Producto.l_categorias, "quantity":int}
         if venta:
-            return Producto.display_search(Producto.json_name, Producto.Classname, Producto.search_keys)
+            return self.reinsertar(Producto.l_keys, Producto.search_keys, venta, cantidad, cancelar, P_Cancelado)
         return self.menu()
 
 def main():
