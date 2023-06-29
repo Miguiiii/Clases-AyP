@@ -114,9 +114,10 @@ class Producto(IB):
         if confirmacion=="N":
             return
 
-        with open(json_name, "r+") as P:
+        with open(json_name, "r") as P:
             lista_productos=json.loads(P.read())
             lista_productos.append(self.info)
+        with open(json_name, "w") as P:
             json.dump(lista_productos, P, indent=2)
 
         print("Nuevo producto registrado".center(35, "-"))

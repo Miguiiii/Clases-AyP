@@ -10,7 +10,7 @@ class Busqueda:
         while True:
             for i in search_keys.keys():
                 index=list(search_keys.keys()).index(i)+1
-                if type(i)==list:
+                if type(i)==tuple:
                     print(f"{index}.-", "/".join(i))
                     continue
                 print(f"{index}.- {i.capitalize()}")
@@ -22,13 +22,20 @@ class Busqueda:
                 print("ADVERTENCIA: Por favor ingrese una opción válida")
             except ValueError:
                 print("ADVERTENCIA: Por favor rellene el campo con el tipo de información requerida")
-        
-        if type(self.s_Key)==list:
-            for i in range(len(self.s_Key)):
-                print(f"{i+1}.- {self.s_Key[i]}")
+        self.Key=self.s_Key
+        if type(self.s_Key)==tuple:
             while True:
-                break
-        if type(search_keys[self.Key])==list:
+                for i in range(len(self.s_Key)):
+                    print(f"{i+1}.- {self.s_Key[i]}")
+                try:
+                    self.Key=int(input("Ingrese el número del tipo de dato a buscar: "))-1
+                    self.Key=self.s_Key[self.Key]
+                    break
+                except IndexError:
+                    print("ADVERTENCIA: Por favor ingrese una opción válida")
+                except ValueError:
+                    print("ADVERTENCIA: Por favor rellene el campo con el tipo de información requerida")
+        if type(search_keys.get(self.Key))==list:
             self.l_opc=search_keys[self.Key]
             print(f"Opciones de {self.Key}".center(30, "-"))
             for i in range(len(self.l_opc)):
@@ -63,7 +70,7 @@ class Busqueda:
         with open(Busqueda.json_name, "r") as BaseDatos:
             self.datos=json.load(BaseDatos)
 
-        return [resul for resul in self.datos if resul[self.Key]==self.Value]
+        return [resul for resul in self.datos if resul.get(self.Key, None)==self.Value]
 
     def display_search(self, name, search_keys):
         

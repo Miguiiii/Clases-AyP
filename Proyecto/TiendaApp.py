@@ -52,12 +52,6 @@ class App:
 
     elif opcion=="3":
       gestionClientes.Cliente(App.clientes)
-      print(
-        "1.- Registrar un nuevo cliente\n"
-        "2.- Buscar clientes en la base de datos\n"
-        "3.- Modificar información de clientes existentes\n"
-        "4.- Eliminar clientes de la tienda\n"
-      )
 
     elif opcion=="4":
       print(
