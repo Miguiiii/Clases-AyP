@@ -98,7 +98,7 @@ class Cliente(IB):
                 print(f"{key}: {value}")
             print("-"*30)
             for i in range(len(self.lista_keys)):
-                if type(self.lista_keys)==tuple:
+                if type(self.lista_keys[i])==tuple:
                     print(f"{i+1}.-", "/".join(self.lista_keys[i]))
                     continue
                 print(f"{i+1}.- {self.lista_keys[i]}")

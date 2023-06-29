@@ -139,6 +139,8 @@ class Modificar(Busqueda):
         self.Mod_index=self.datos.index(self.Mod_element)
         self.datos.remove(self.Mod_element)
         if eliminar:
+            with open(Modificar.json_name, "w") as file:
+                json.dump(self.datos, file, indent=2)
             print("El elemento seleccionado ha sido removido con éxito de la base de datos de la tienda.")
             return
     
@@ -174,15 +176,23 @@ class Modificar(Busqueda):
             encontrado=self._modificar(l_keys, search_keys, venta, cantidad)
         if cancelar:
             self.Mod_index=P_Cancelado[0]
-            self.Mod_element=P_Cancelado[1]
-            with open(Modificar.json_name, "r+") as file:
+            self.Prod_comprado=P_Cancelado[1]
+            with open(Modificar.json_name, "r") as file:
                 self.datos=json.load(file)
-                self.datos.insert(self.Mod_index, self.Mod_element)
+            if self.Mod_index!=-1:
+                self.Mod_element=self.datos[self.Mod_index]
+                self.Mod_element["quantity"]+=self.Prod_comprado["quantity"]
+            else:
+                self.Mod_element=self.Prod_comprado
+            self.datos.insert(self.Mod_index, self.Mod_element)
+            with open(Modificar.json_name, "w") as file:
                 json.dump(self.datos, file, indent=2)
         if encontrado==False:
-            return
+            return (-1, self.Prod_comprado)
         self.datos.insert(self.Mod_index, self.Mod_element)
         with open(Modificar.json_name, "w") as file:
             json.dump(self.datos, file, indent=2)
-        if not venta or not cancelar:
+        if venta:
+            return self.Mod_index, self.Prod_comprado
+        if not cancelar:
             print("[ Elemento modificado con éxito ]".center(30, "*"))

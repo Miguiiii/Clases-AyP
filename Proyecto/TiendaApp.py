@@ -29,9 +29,8 @@ class App:
       "3.- Gestionar clientes\n"
       "4.- Gestionar pagos\n"
       "5.- Gestionar envíos\n"
-      "6.- Visualizar estadísticas\n"
-      "7.- Reestablecer el estado inicial del programa\n"
-      "8.- Salir\n"
+      "6.- Reestablecer el estado inicial del programa\n"
+      "7.- Salir\n"
     )
     while True:
       opcion=input("Ingrese el número de la acción a realizar: ")
@@ -44,11 +43,7 @@ class App:
       gestionProductos.Producto(App.productos)
     
     elif opcion=="2":
-      print(
-        "1.- Registrar una nueva venta\n"
-        "2.- Generar factura de compra\n"
-        "3.- Buscar ventas en la base de datos\n"
-      )
+      gestionVentas.Venta(App.ventas)
 
     elif opcion=="3":
       gestionClientes.Cliente(App.clientes)
@@ -66,14 +61,6 @@ class App:
       )
 
     elif opcion=="6":
-      print(
-        "1.- Estadísticas de ventas\n"
-        "2.- Estadísticas de pagos\n"
-        "3.- Estadísticas de envíos\n"
-        "4.- Generar gráficos de estadísticas\n"
-      )
-
-    elif opcion=="7":
       while True:
         confirmacion=input("¿Está seguro de que quiere reestablecer el estado inicial del programa?\n"
                            "Se borrarán todos los datos actuales.    Y/N\n").upper()
@@ -88,7 +75,7 @@ class App:
         self._borrado_datos()
         self._pre_cargado()
 
-    elif opcion=="8":
+    elif opcion=="7":
       while True:
         confirmacion=input("¿Está seguro de que quiere salir del programa?    Y/N\n").upper()
         if confirmacion not in ["Y", "N"]:
