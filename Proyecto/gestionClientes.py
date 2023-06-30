@@ -4,7 +4,12 @@ from InterfazBusqueda import Modificar as IB
 class Cliente(IB):
 
     def info_cliente(self):
-        self.IdPersonal=input("Ingrese el nombre y apellido del cliente, o en su defecto su Razon Social: ")
+        while True:
+            self.IdPersonal=input("Ingrese el nombre y apellido del cliente, o en su defecto su Razon Social: ")
+            if self.IdPersonal!="":
+                break
+            print("ADVERTENCIA: Por favor ingrese el campo con el tipo de información requerida")
+
         for i in range(len(Cliente.l_TiposCliente)):
             print(f"{i+1}.- {Cliente.l_TiposCliente[i]}")
         while True:
@@ -47,7 +52,7 @@ class Cliente(IB):
             break
         while True:
             self.correo=input("Ingrese un correo electrónico (debe de contener un solo @, seguido por un dominio): ")
-            if len(self.correo.split("@"))!=2 or "." not in self.correo[self.correo.index("@"):]:
+            if len(self.correo.split("@"))!=2 or self.correo[:self.correo.index("@")]=="" or "." not in self.correo[self.correo.index("@"):] or any([i=="" for i in self.correo[self.correo.index("@"):].split(".")]):
                 print("ADVERTENCIA: Por favor ingrese el campo con el tipo de información requerida")
                 continue
             break

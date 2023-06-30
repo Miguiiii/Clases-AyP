@@ -5,10 +5,13 @@ from gestionClientes import Cliente as C
 class Venta(IB):
 
     def buscar_cliente(self):
-        C("Clientes.json", True)
+        self.IdCliente=C("Clientes.json", True)
+        
+
+
 
     def info_venta(self):
-        self.IdCliente=None
+        self.IdCliente=self.buscar_cliente()
         self.productos=None
         self.CantidadProductos=None
         self.MetodoPago=None
@@ -34,7 +37,7 @@ class Venta(IB):
                 print("ADVERTENCIA: Por favor ingrese un número de acción válido")
                 continue
             break
-        
+
         if opcion=="1":
             self.registrar(Venta.json_name)
         
