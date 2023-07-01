@@ -29,18 +29,18 @@ class App:
     with open(App.estadisticas, "w") as Est:
       stats={
         "Ventas":{
-          "Ventas totales":{},
-          "Productos más vendidos":{},
-          "Clientes más frecuentes":{}
+          "Totales":{},
+          "Productos":{},
+          "Frecuentes":{}
         },
         "Pagos":{
-          "Pagos totales":{},
-          "Clientes con pagos pendientes":{}
+          "Totales":{},
+          "Pendientes":{}
         },
         "Envios":{
-          "Envios totales":{},
-          "Productos más enviados":{},
-          "Clientes con envíos pendientes":{}
+          "Totales":{},
+          "Productos":{},
+          "Pendientes":{}
         }
       }
       json.dump(stats, Est, indent=2)
@@ -61,7 +61,7 @@ class App:
     while True:
       #Verificación de que se ingrese una opción válida
       opcion=input("Ingrese el número de la acción a realizar: ")
-      if opcion=="Borrar base de datos":
+      if opcion=="Borrar base de datos": #Opcion secreta para que quien maneje el programa elimine los datos, no se supone que un usuario normal la use
         break
       if opcion not in ["1", "2", "3", "4", "5", "6", "7", "8"]:
         print("ADVERTENCIA: Por favor ingrese un número de acción válido")
@@ -78,16 +78,13 @@ class App:
 
     elif opcion=="3":
       #Las siguientes hacen lo mismo, pero también le pasan el nombre del JSON de las estadísticas
-      gestionVentas.Venta(App.ventas, App.estadisticas).menu()
+      gestionVentas.Venta(App.ventas, App.estadisticas).menu(App.ventas, App.estadisticas)
 
     elif opcion=="4":
-      gestionPagos.Pago(App.pagos, App.estadisticas).menu()
+      gestionPagos.Pago(App.pagos, App.estadisticas).menu(App.pagos, App.estadisticas)
 
     elif opcion=="5":
-      print(
-        "1.- Registrar un nuevo envío\n"
-        "2.- Buscar envíos en la base de datos\n"
-      )
+      gestionEnvios.Envio(App.envios, App.estadisticas).menu(App.envios, App.estadisticas)
 
     elif opcion=="6":
       #Explica brevemente lo esencial del programa
@@ -135,7 +132,7 @@ class App:
 
       if confirmacion=="Y":
         print("Muchas gracias por usar nuestro programa".center(50, "-"))
-        if opcion=="Borrar base de datos":
+        if opcion=="Borrar base de datos": #Activa la opcion secreta de eliminar los datos
           self._borrado_datos()
         return
 

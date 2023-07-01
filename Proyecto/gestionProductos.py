@@ -4,16 +4,19 @@ from InterfazBusqueda import Modificar as IB
 class Producto(IB):
 
     def _get_cats(self, json_name):
+        #Consigue las categorías de los productos, aunque esto causa que al mostrares en una lista, cada vez que se llama, el orden es distinto
         with open(json_name, "r") as fh:
             Producto.l_categorias=list({p["category"] for p in json.load(fh)})
 
     def _modificar(self, l_keys, search_keys, venta):
+        #Continuación de la función Modificar en la clase Padre de Producto
         encontrado=super()._modificar(l_keys, search_keys, venta)
-        if venta:
-            return
         if encontrado==False:
             return False
+        if venta:
+            return
         while True:
+            #Todo este bloque es un loop para elegir qué parte del producto modificar, acompañado de sus debidas verificaciones
             print("[ Producto a modificar ]".center(30, "-"))
             for key, value in self.Mod_element.items():
                 print(f"{key}: {value}")
@@ -69,6 +72,7 @@ class Producto(IB):
             self.Mod_element[el_key]=n_value
 
     def info_producto(self):
+        #Se llama a esta función para establecer los valores de un nuevo producto
         self.nombreProducto=input("Ingrese el nombre del nuevo producto: ")
         self.descripcion=input("Ingrese una descripción para el producto: ")
         while True:
@@ -95,7 +99,7 @@ class Producto(IB):
                 break
 
             print("ADVERTENCIA: Por favor ingrese una opción válida")
-
+        #La función regresa el diccionario de un producto cualquiera, haciendo ZIP entre las Keys de un producto y los valores anteriormente establecidos
         return dict(zip(Producto.l_keys.keys(), [self.nombreProducto, self.descripcion, self.precio, self.categoria, self.quantity]))
 
     def registrar(self, json_name):
@@ -129,14 +133,16 @@ class Producto(IB):
         print("Nuevo producto registrado".center(35, "-")+"\n")
 
     def menu(self):
-
+        #El menú de opciones de la Gestión de productos
         print(
             "\n"+"[ Gestión de Productos ]".center(54, "*")+"\n"
             "1.- Agregar un nuevo producto\n"
             "2.- Buscar productos en la base de datos\n"
             "3.- Modificar información de productos existentes\n"
             "4.- Eliminar productos de la tienda\n"
-            "5.- Regresar\n"
+            "5.- Regresar\n\n"
+            "ADVERTENCIA: Cualquier modificación realizada a la base de datos de productos no alterará\n"
+            "aquellos ya registrados en ventas, pagos y/o envíos.\n"
             )
         while True:
             opcion=input("Ingrese el número de la acción a realizar: ")
@@ -145,34 +151,34 @@ class Producto(IB):
                 continue
             break
         if opcion=="1":
+            #Llama a la función de insertar un nuevo producto en la base de datos
             self.registrar(Producto.json_name)
         
         if opcion=="2":
+            #Llama a la función de buscar un producto en la base de datos
             self.display_search(Producto.Classname, Producto.search_keys)
         
         if opcion=="3":
+            #Llama a la función modificar un producto en la base de datos (esto implica extraerlo, modificarlo, y reinsertarlo)
             self.reinsertar(Producto.l_keys, Producto.search_keys)
         
         if opcion=="4":
+            #Llama a la función para eliminar un producto de la base de datos
             self.extraer(Producto.search_keys, True)
         
         if opcion=="5":
+            #Te regresa al menú principal
             return
         
+        #Hace que se repita este menú hasta que decidas volver
         input("Presione Enter para continuar")
         self.menu()
 
-    def __init__(self, json_name, venta=False, cancelar=False, P_Cancelado=None):
+    def __init__(self, json_name):
         super().__init__(json_name)
-        if not hasattr(self, "l_categorias"):
+        if not hasattr(Producto, "l_categorias"):
             self._get_cats(Producto.json_name)
+        #Estas son la lista de Keys que tiene un producto, y la lista de Keys con las que se puede buscar un producto
         Producto.l_keys={"name":str, "description":str, "price":int, "category":Producto.l_categorias, "quantity":int}
         Producto.search_keys={"name":"Mesa de playa", "price":int, "category":Producto.l_categorias, "quantity":int}
-        # if venta:
-        #     self.reinsertar(Producto.l_keys, Producto.search_keys, venta, cancelar, P_Cancelado)
-
-def main():
-    Producto("Productos.json")
-
-if __name__=="__main__":
-    main()
+        

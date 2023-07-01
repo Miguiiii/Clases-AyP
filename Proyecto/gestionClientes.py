@@ -2,7 +2,7 @@ import json
 from InterfazBusqueda import Modificar as IB
 
 class Cliente(IB):
-
+    #Todas las funciones de esta Clase son en esencia las mismas que la de la clase Producto.
     def info_cliente(self):
         while True:
             self.IdPersonal=input("Ingrese el nombre y apellido del cliente, o en su defecto su Razon Social: ")
@@ -182,7 +182,9 @@ class Cliente(IB):
             "2.- Buscar clientes en la base de datos\n"
             "3.- Modificar información de clientes existentes\n"
             "4.- Eliminar clientes de la tienda\n"
-            "5.- Regresar\n"
+            "5.- Regresar\n\n"
+            "ADVERTENCIA: Cualquier modificación realizada a la base de datos de clientes no alterará\n"
+            "aquellos ya registrados en ventas, pagos y/o envíos.\n"
         )
         while True:
             opcion=input("Ingrese el número de la acción a realizar: ")
@@ -226,10 +228,3 @@ class Cliente(IB):
         #Establece las llaves y los tipos de valores con los que se puede buscar a un cliente
         Cliente.search_keys={Cliente.l_TiposIdNumerica:"Cédula: 30567501\nRIF: 30567501-5", "E-mail":"tienda.natural@gmail.com"}
         
-
-
-def main():
-    pass
-
-if __name__=="__main__":
-    main()

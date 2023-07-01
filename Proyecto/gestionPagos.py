@@ -6,6 +6,7 @@ import datetime as DT
 class Pago(IB):
     
     def _buscar_venta(self, stats):
+        #Busca una venta y verifica si ya ha sido pagada
         print("Busque la venta que desea pagar")
         venta=V("Ventas.json", stats)
         self.VentaAPagar=venta.identificar(venta.search_keys)
@@ -24,6 +25,7 @@ class Pago(IB):
                 self._buscar_venta(stats)
 
     def info_pago(self, stats):
+        #Registra la información del pago, ya sea mediante input del usuario o por información de la Compra seleccionada
         cancelar=self._buscar_venta(stats)
         if cancelar==False:
             return False
@@ -33,10 +35,10 @@ class Pago(IB):
         if self.VentaAPagar["Método de pago"]=="Divisas":
             while True:
                 print("Monedas de Pago".center(35, "*"))
-                for i in range(len(Pago.l_Monedas_Pago)):
-                    print(f"{i+1}.- {Pago.l_Monedas_Pago[i]}")
+                for i in range(1, len(Pago.l_Monedas_Pago)):
+                    print(f"{i}.- {Pago.l_Monedas_Pago[i]}")
                 try:
-                    self.MonedaPago=int(input("Ingrese el número de la moneda de pago a usar: "))-1
+                    self.MonedaPago=int(input("Ingrese el número de la moneda de pago a usar: "))
                     self.MonedaPago=Pago.l_Monedas_Pago[self.MonedaPago]
                     break
                 except ValueError:
@@ -88,6 +90,7 @@ class Pago(IB):
         print(f"Fecha de pago establecida: {self.fecha}")
 
     def _display_info(self, stats):
+        #Display y confirmación
         cancelar=self.info_pago(stats)
 
         if cancelar==False:
@@ -117,6 +120,7 @@ class Pago(IB):
             return False
 
     def registrar_pago(self, json_name, stats):
+        #Registra el Pago y actualiza las estadísticas, igual que la clase Venta
         cancelar=self._display_info(stats)
 
         if cancelar==False:
@@ -132,7 +136,6 @@ class Pago(IB):
         with open(stats, "r") as s:
             estadisticas=json.load(s)
             p_stats=estadisticas["Pagos"]
-            e_stats=estadisticas["Envios"]
         
         self.fecha=self.fecha.split("/")
         dia, mes, año=int(self.fecha[0]), int(self.fecha[1]), int(self.fecha[2])
@@ -141,19 +144,17 @@ class Pago(IB):
         semana=fecha.strftime("%W")
         mes, año=str(mes), str(año)
 
-        p_totales=p_stats["Pagos totales"]
+        p_totales=p_stats["Totales"]
         p_totales[año]=p_totales.get(año, {"dias":{}, "semanas":{}, "meses":{}})
         p_totales[año]["dias"][dia]=p_totales[año]["dias"].get(dia, 0)+1
         p_totales[año]["semanas"][semana]=p_totales[año]["semanas"].get(semana, 0)+1
         p_totales[año]["meses"][mes]=p_totales[año]["meses"].get(mes, 0)+1
-        p_stats["Pagos totales"]=p_totales
-        p_stats["Clientes con pagos pendientes"][self.IdCliente["Nombre"]]-=1
-        if p_stats["Clientes con pagos pendientes"][self.IdCliente["Nombre"]]==0:
-            p_stats["Clientes con pagos pendientes"].pop(self.IdCliente["Nombre"])
+        p_stats["Totales"]=p_totales
+        p_stats["Pendientes"][self.IdCliente["Nombre"]]-=1
+        if p_stats["Pendientes"][self.IdCliente["Nombre"]]==0:
+            p_stats["Pendientes"].pop(self.IdCliente["Nombre"])
         estadisticas["Pagos"]=p_stats
 
-        e_stats["Clientes con envíos pendientes"][self.IdCliente["Nombre"]]=e_stats["Clientes con envíos pendientes"].get(self.IdCliente["Nombre"])
-        estadisticas["Envios"]=e_stats
         with open(stats, "w") as s:
             json.dump(estadisticas, s, indent=2)
 
@@ -165,9 +166,27 @@ class Pago(IB):
         with open("Ventas.json", "w") as file:
             json.dump(ventas, file, indent=2)
 
-        print("El pago se ha registrado exitosamente".center(35, "-")+"\n")
+        print(
+            "El pago se ha registrado exitosamente".center(35, "-")+"\n"
+        )
 
-    def menu(self):
+    def _set_atributos(self, json_name, stats_json):
+        #Hace lo mismo que lo que hace en Venta, pero en este caso, lo hace para la clase Pago
+        super().__init__(json_name, stats_json)
+        Pago.l_Tipos_Pago=["PdV", "PM", "Zelle", "Efectivo", "Transferencia", "Pago Móvil"]
+        Pago.l_Monedas_Pago=["Bolívar", "Dólar", "Euro"]
+        Pago.l_keys={
+            "Cliente":dict,
+            "Monto del Pago":float,
+            "Moneda de pago":Pago.l_Monedas_Pago,
+            "Tipo de Pago":Pago.l_Tipos_Pago,
+            "Fecha":str
+        }
+        Pago.search_keys.update({"Tipo de pago":Pago.l_Tipos_Pago, "Moneda de pago":Pago.l_Monedas_Pago})
+        Pago.Stats_keys=["Pagos totales", "Clientes con pagos pendientes"]
+
+    def menu(self, json_name, stats_json):
+        self._set_atributos(json_name, stats_json)
         print(
             "\n"+"[ Gestion de Pagos ]".center(54, "-")+"\n"
             "1.- Registrar un nuevo pago\n"
@@ -189,32 +208,15 @@ class Pago(IB):
         elif opcion=="2":
             self.display_search(Pago.Classname, Pago.search_keys)
         
-        # elif opcion=="3":
-        #     return
+        elif opcion=="3":
+            #Estadísticas
+            self.menu_estad(Pago.Stats_keys)
         
         elif opcion=="4":
             return
         
         input("Presione Enter para continuar")
-        self.menu()
+        self.menu(json_name, stats_json)
 
     def __init__(self, json_name, stats_json):
-        super().__init__(json_name, stats_json)
-        Pago.l_Tipos_Pago=["PdV", "PM", "Zelle", "Efectivo", "Transferencia", "Pago Móvil"]
-        Pago.l_Monedas_Pago=["Bolívar", "Dólar", "Euro"]
-        Pago.l_keys={
-            "Cliente":dict,
-            "Monto del Pago":float,
-            "Moneda de pago":Pago.l_Monedas_Pago,
-            "Tipo de Pago":Pago.l_Tipos_Pago,
-            "Fecha":str
-        }
-        Pago.search_keys.update({"Tipo de pago":Pago.l_Tipos_Pago, "Moneda de pago":Pago.l_Monedas_Pago})
-        Pago.Stats_keys={"Pagos totales": {}, "Clientes con pagos pendientes":list}
-
-
-def main():
-    pass
-
-if __name__=="__main__":
-    main()
+        self._set_atributos(json_name, stats_json)
