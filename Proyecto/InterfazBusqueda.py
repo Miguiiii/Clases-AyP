@@ -43,15 +43,25 @@ class Busqueda:
                     f"{i+1}.- {self.l_opc[i]}"
                 )
 
+        elif type(search_keys[self.s_Key])==dict:
+            self.out_key=self.s_Key
+            self._KeyValue_search("Cliente", search_keys[self.s_Key])
+            return
+
         while True:
             if type(search_keys[self.s_Key])==str:
                 print("Ejemplo de dato seleccionado:")
                 print(search_keys[self.s_Key])
             self.Value=input(f"Ingrese el valor a buscar en la casilla de {self.Key}: ")
-            if search_keys[self.s_Key]!=int and type(search_keys[self.s_Key])!=list:
+            if search_keys[self.s_Key] not in [int, float] and type(search_keys[self.s_Key])!=list:
                 return
             try:
-                self.Value=int(self.Value)
+                if search_keys[self.s_Key]==float:
+                    self.Value=float(self.Value)
+                else:
+                    self.Value=int(self.Value)
+                if not self.Value>0:
+                    raise Exception
                 if type(search_keys[self.s_Key])==list:
                     self.Value-=1
                     if self.Value not in range(len(search_keys[self.s_Key])):
@@ -59,7 +69,7 @@ class Busqueda:
                     self.Value=self.l_opc[self.Value]
                 break
             except:
-                if search_keys[self.s_Key]==int:
+                if search_keys[self.s_Key] in [int, float]:
                     print("ADVERTENCIA: Por favor rellene el campo con el tipo de información requerida")
                 elif type(search_keys[self.s_Key])==list:
                     print("ADVERTENCIA: Por favor ingrese una opción válida")
@@ -69,27 +79,36 @@ class Busqueda:
 
         with open(Busqueda.json_name, "r") as BaseDatos:
             self.datos=json.load(BaseDatos)
+        
+        if hasattr(self, "out_key"):
+            return [resul for resul in self.datos if resul[self.out_key][self.Key]==self.Value]
 
         return [resul for resul in self.datos if resul.get(self.Key, None)==self.Value]
 
     def display_search(self, name, search_keys):
         
         self.resultados=self._buscar(name, search_keys)
+        if hasattr(self, "out_key"):
+            self.Key=f"{self.Key} de {self.out_key}"
+
+
         if len(self.resultados)==0:
             print(f"[ No se han encontrado {name} con {self.Key}={self.Value} ]".center(40, "*"))
             return False
         
         print(
-            f"[ {name} con {self.Key}={self.Value} ]".center(40, "*")
+            f"[ {name} con {self.Key}={self.Value} ]".center(50, "*")
         )
+
         for i in range(len(self.resultados)):
             p=self.resultados[i]
             print(f"{i+1}".center(31, "-"))
             for key, value in p.items():
                 if type(value)==dict:
                     print(f"{key}:")
-                    print(
-                            "   "+json.dumps(value, indent=2, separators=("", ": "))
+                    for k, v in value.items():
+                        print(
+                            f"   {k}: {v}"
                         )
                     continue
                 print(
@@ -131,6 +150,9 @@ class Modificar(Busqueda):
 
             if confirmacion=="Y":
                 return self.Mod_element
+            
+            else:
+                return self.identificar(search_keys)
 
     def extraer(self, search_keys, eliminar=False):
         encontrado=self.identificar(search_keys)
@@ -144,55 +166,57 @@ class Modificar(Busqueda):
             print("El elemento seleccionado ha sido removido con éxito de la base de datos de la tienda.")
             return
     
-    def _modificar(self, l_keys, search_keys, venta, cantidad):
+    def _modificar(self, l_keys, search_keys, venta):
         encontrado=self.extraer(search_keys)
         if venta:
-            cant=cantidad
-            if cantidad==0:
-                while True:
-                    try:
-                        cant=int(input("Ingrese la cantidad de {} que agregar al carrito de compra: ".format(self.Mod_element["name"])))
-                        if cant<=0:
-                            raise ValueError
-                    except ValueError:
-                        print("ADVERTENCIA: Por favor ingrese los campo con el tipo de información requerida")
-                        continue
-                    if cant>self.Mod_element["quantity"]:
-                        print("ADVERTENCIA: La cantidad ingresada supera a la disponible en el inventario")
-                        continue
-                    cant=-cant
-                    break
-            self.Prod_comprado=self.Mod_element
+            while True:
+                print("-"*31)
+                for key, value in self.Mod_element.items():
+                    print(f"{key}: {value}")
+                print("-"*31)
+                try:
+                    cant=int(input("Ingrese la cantidad de {} que agregar al carrito de compra: ".format(self.Mod_element["name"])))
+                    if cant<=0:
+                        raise ValueError
+                except ValueError:
+                    print("ADVERTENCIA: Por favor ingrese los campo con el tipo de información requerida")
+                    continue
+                if cant>self.Mod_element["quantity"]:
+                    print("ADVERTENCIA: La cantidad ingresada supera a la disponible en el inventario")
+                    continue
+                cant=cant
+                break
+            self.Prod_comprado=self.Mod_element.copy()
             self.Mod_element["quantity"]-=cant
             self.Prod_comprado["quantity"]=cant
             return
 
-        if encontrado==False or self.Mod_element.get("quantity", "No existe")==0:
+        if encontrado==False:
             return False
         self.lista_keys=list(l_keys.keys())
         
-    def reinsertar(self, l_keys, search_keys, venta=False, cantidad=0, cancelar=False, P_Cancelado=None):
-        if not cancelar:
-            encontrado=self._modificar(l_keys, search_keys, venta, cantidad)
+    def reinsertar(self, l_keys, search_keys, venta=False, cancelar=False, P_Cancelado=None):
+        
         if cancelar:
             self.Mod_index=P_Cancelado[0]
-            self.Prod_comprado=P_Cancelado[1]
+            self.Prod_cantidad=P_Cancelado[1]
             with open(Modificar.json_name, "r") as file:
                 self.datos=json.load(file)
-            if self.Mod_index!=-1:
-                self.Mod_element=self.datos[self.Mod_index]
-                self.Mod_element["quantity"]+=self.Prod_comprado["quantity"]
-            else:
-                self.Mod_element=self.Prod_comprado
-            self.datos.insert(self.Mod_index, self.Mod_element)
-            with open(Modificar.json_name, "w") as file:
-                json.dump(self.datos, file, indent=2)
-        if encontrado==False:
-            return (-1, self.Prod_comprado)
+            self.Mod_element=self.datos.pop(self.Mod_index)
+            self.Mod_element["quantity"]+=self.Prod_cantidad
+
+        else:
+            encontrado=self._modificar(l_keys, search_keys, venta)
+
+            if encontrado==False:
+                return False
+        
         self.datos.insert(self.Mod_index, self.Mod_element)
         with open(Modificar.json_name, "w") as file:
             json.dump(self.datos, file, indent=2)
-        if venta:
+
+        if hasattr(self, "Prod_comprado"):
             return self.Mod_index, self.Prod_comprado
+        
         if not cancelar:
             print("[ Elemento modificado con éxito ]".center(30, "*"))

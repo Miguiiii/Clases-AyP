@@ -93,10 +93,12 @@ class Cliente(IB):
         with open(json_name, "w") as C:
             json.dump(lista_clientes, C, indent=2)
 
-        print("Nuevo cliente registrado".center(35, "-"))
+        print("Nuevo cliente registrado".center(35, "-")+"\n")
 
     def _modificar(self, l_keys, search_keys, venta, cantidad):
-        super()._modificar(l_keys, search_keys, venta, cantidad)
+        encontrado=super()._modificar(l_keys, search_keys, venta, cantidad)
+        if encontrado==False:
+            return False
         while True:
             print("[ Cliente a modificar ]".center(30, "-"))
             for key, value in self.Mod_element.items():
@@ -174,9 +176,8 @@ class Cliente(IB):
             self.Mod_element[el_key]=n_value
 
     def menu(self):
-        Cliente.l_keys={"Identificación":str, "Tipo de cliente":Cliente.l_TiposCliente, Cliente.l_TiposIdNumerica:str, "E-mail":str, "Dirección":str, "Teléfono":str}
         print(
-            "[ Gestión de Clientes ]".center(54, "*")+"\n"
+            "\n"+"[ Gestión de Clientes ]".center(54, "*")+"\n"
             "1.- Registrar un nuevo cliente\n"
             "2.- Buscar clientes en la base de datos\n"
             "3.- Modificar información de clientes existentes\n"
@@ -207,14 +208,24 @@ class Cliente(IB):
         input("Presione Enter para continuar")
         self.menu()
 
-    def __init__(self, json_name, identificar=False):
+    def __init__(self, json_name):
+        #El super() establece el nombre del archivo JSON y el nombre del gestor (Productos)
         super().__init__(json_name)
+        #Establece los tipos de cliente y los tipos de Identificación numérica
         Cliente.l_TiposCliente=["Natural", "Jurídico"]
         Cliente.l_TiposIdNumerica=("Cédula", "RIF")
+        #Establece las llaves que contienen la información de un cliente
+        Cliente.l_keys={
+            "Nombre":str,
+            "Tipo de cliente":Cliente.l_TiposCliente,
+            Cliente.l_TiposIdNumerica:str,
+            "E-mail":str,
+            "Dirección":str,
+            "Teléfono":str
+        }
+        #Establece las llaves y los tipos de valores con los que se puede buscar a un cliente
         Cliente.search_keys={Cliente.l_TiposIdNumerica:"Cédula: 30567501\nRIF: 30567501-5", "E-mail":"tienda.natural@gmail.com"}
-        if identificar:
-            return self.identificar(Cliente.search_keys)
-        return self.menu()
+        
 
 
 def main():

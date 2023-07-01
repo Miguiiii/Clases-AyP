@@ -7,8 +7,12 @@ class Producto(IB):
         with open(json_name, "r") as fh:
             Producto.l_categorias=list({p["category"] for p in json.load(fh)})
 
-    def _modificar(self, l_keys, search_keys, venta, cantidad):
-        super()._modificar(l_keys, search_keys, venta, cantidad)
+    def _modificar(self, l_keys, search_keys, venta):
+        encontrado=super()._modificar(l_keys, search_keys, venta)
+        if venta:
+            return
+        if encontrado==False:
+            return False
         while True:
             print("[ Producto a modificar ]".center(30, "-"))
             for key, value in self.Mod_element.items():
@@ -41,6 +45,8 @@ class Producto(IB):
             if type(self.Mod_element[el_key])==int:
                 try:
                     n_value=int(n_value)
+                    if n_value<=0:
+                        raise Exception
                 except:
                     print("ADVERTENCIA: Por favor rellene el campo con el tipo de información requerida")
                     input("Presione Enter para continuar")
@@ -115,17 +121,17 @@ class Producto(IB):
             return
 
         with open(json_name, "r") as P:
-            lista_productos=json.loads(P.read())
+            lista_productos=json.load(P)
             lista_productos.append(self.info)
         with open(json_name, "w") as P:
             json.dump(lista_productos, P, indent=2)
 
-        print("Nuevo producto registrado".center(35, "-"))
+        print("Nuevo producto registrado".center(35, "-")+"\n")
 
     def menu(self):
 
         print(
-            "[ Gestión de Productos ]".center(54, "*")+"\n"
+            "\n"+"[ Gestión de Productos ]".center(54, "*")+"\n"
             "1.- Agregar un nuevo producto\n"
             "2.- Buscar productos en la base de datos\n"
             "3.- Modificar información de productos existentes\n"
@@ -156,14 +162,14 @@ class Producto(IB):
         input("Presione Enter para continuar")
         self.menu()
 
-    def __init__(self, json_name, venta=False, cantidad=0, cancelar=False, P_Cancelado=None):
+    def __init__(self, json_name, venta=False, cancelar=False, P_Cancelado=None):
         super().__init__(json_name)
-        self._get_cats(Producto.json_name)
+        if not hasattr(self, "l_categorias"):
+            self._get_cats(Producto.json_name)
         Producto.l_keys={"name":str, "description":str, "price":int, "category":Producto.l_categorias, "quantity":int}
         Producto.search_keys={"name":"Mesa de playa", "price":int, "category":Producto.l_categorias, "quantity":int}
-        if venta:
-            return self.reinsertar(Producto.l_keys, Producto.search_keys, venta, cantidad, cancelar, P_Cancelado)
-        return self.menu()
+        # if venta:
+        #     self.reinsertar(Producto.l_keys, Producto.search_keys, venta, cancelar, P_Cancelado)
 
 def main():
     Producto("Productos.json")
