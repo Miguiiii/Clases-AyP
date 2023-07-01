@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-07-01T16:05:33.927Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 OPR/99.0.0.0" etag="-k054_WrFwIHrxrl-5ca" version="21.5.2" type="github">
+<mxfile host="app.diagrams.net" modified="2023-07-01T16:06:19.947Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 OPR/99.0.0.0" etag="HVmzzx2xMQ6RsGMViF0e" version="21.5.2" type="github">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
     <mxGraphModel dx="980" dy="534" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
@@ -200,8 +200,8 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="r4VkA0C6aDcxrOjHeQfj-1" value="+ IdPersonal: str&lt;br&gt;+ TipoCliente: str&lt;br&gt;+ TipoIdNumerica:str&lt;br&gt;+ IdNumérica: int&lt;br&gt;+ Correo: str&lt;br&gt;+ DirEnvío: str&lt;br&gt;+ Teléfono: int&lt;br&gt;+l_TiposCliente:list&lt;br&gt;+l_TiposIdNumerica:list" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="210" y="642" width="140" height="104" as="geometry" />
+        <mxCell id="r4VkA0C6aDcxrOjHeQfj-1" value="+ IdPersonal: str&lt;br&gt;+ TipoCliente: str&lt;br&gt;+ TipoIdNumerica:str&lt;br&gt;+ IdNumérica: int&lt;br&gt;+ Correo: str&lt;br&gt;+ DirEnvío: str&lt;br&gt;+ Teléfono: int&lt;br&gt;+l_TiposCliente:list&lt;br&gt;+l_TiposIdNumerica:list&lt;br&gt;+l_keys:dict&lt;br&gt;+search_keys:dict" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="210" y="642" width="140" height="148" as="geometry" />
         </mxCell>
         <mxCell id="r4VkA0C6aDcxrOjHeQfj-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.021;entryY=0.21;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="B3_MCuhh_yEYDU53H7Zv-9" target="r4VkA0C6aDcxrOjHeQfj-1">
           <mxGeometry relative="1" as="geometry" />
