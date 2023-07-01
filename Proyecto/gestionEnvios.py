@@ -42,8 +42,11 @@ class Envio(IB):
                 break
             while True:
                 try:
-                    tele_motorizado=int(input("Ingrese el teléfono del motorizado en el formato de un número de 11 dígitos: "))
+                    tele_motorizado=input("Ingrese el teléfono del motorizado en el formato de un número de 11 dígitos: ")
                     if len(tele_motorizado)!=11:
+                        print("ADVERTENCIA: Por favor rellene el campo con el formato requerida")
+                        continue
+                    if not tele_motorizado.isnumeric():
                         print("ADVERTENCIA: Por favor rellene el campo con el tipo de información requerida")
                         continue
                     break
